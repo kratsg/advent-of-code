@@ -18,22 +18,22 @@ def computer(program, doPrint=False):
     print('  ', 'MEMORY', memory)
 
   for i in iterable:
-    token = memory[i]
+    pointer = memory[i]
     if doPrint:
-      print('  ', '[{}]'.format(i), token, memory)
-    if token == 99: break
-    elif token in OPS:
-      left_idx  = memory[i+1]
-      right_idx = memory[i+2]
-      dest_idx  = memory[i+3]
-      left_val  = memory[left_idx]
-      right_val = memory[right_idx]
-      dest_val  = memory[dest_idx]
-      memory[dest_idx] = OPS[token](left_val, right_val)
+      print('  ', '[{}]'.format(i), pointer, memory)
+    if pointer == 99: break
+    elif pointer in OPS:
+      left_addr  = memory[i+1]
+      right_addr = memory[i+2]
+      dest_addr  = memory[i+3]
+      left_val  = memory[left_addr]
+      right_val = memory[right_addr]
+      dest_val  = memory[dest_addr]
+      memory[dest_addr] = OPS[pointer](left_val, right_val)
       if doPrint:
-        print('    ', 'LEFT ', '[{}]'.format(left_idx), left_val)
-        print('    ', 'RIGHT', '[{}]'.format(right_idx), right_val)
-        print('    ', 'DEST ', '[{}]'.format(dest_idx), dest_val, '->', memory[dest_idx])
+        print('    ', 'LEFT ', '[{}]'.format(left_addr), left_val)
+        print('    ', 'RIGHT', '[{}]'.format(right_addr), right_val)
+        print('    ', 'DEST ', '[{}]'.format(dest_addr), dest_val, '->', memory[dest_addr])
       [next(iterable) for x in range(3)] # move forwards 4
     else:
       RuntimeError('Cannot parse program')
