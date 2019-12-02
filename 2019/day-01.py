@@ -1,5 +1,5 @@
 import numpy as np
-module_masses = np.genfromtxt('input/day-01a.txt')
+module_masses = np.genfromtxt('input/day-01.txt')
 
 def module_fuel(module_mass):
   return np.floor_divide(module_mass, 3) - 2
