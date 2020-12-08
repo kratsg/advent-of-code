@@ -6,6 +6,7 @@ def process_input(data):
 def computer(instructions, pointers=None, accumulators=None):
     accumulators = accumulators or [0]
     pointers = pointers or [0]
+    success = False
     while True:
         pointer = pointers[-1]
         accumulator = accumulators[-1]
@@ -19,15 +20,16 @@ def computer(instructions, pointers=None, accumulators=None):
             pointer += value
 
         if pointer in pointers:
-            return (False, pointers, accumulators)
+            break
 
         pointers.append(pointer)
         accumulators.append(accumulator)
 
         if pointer == len(instructions):
-            return (True, pointers, accumulators)
+            success = True
+            break
 
-    return (False, pointers, accumulators)
+    return (success, pointers, accumulators)
 
 
 def fix_bug(instructions, pointers, accumulators):
