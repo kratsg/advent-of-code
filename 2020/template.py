@@ -1,7 +1,11 @@
+def process_input(data):
+    return
+
 if __name__ == "__main__":
     from aocd.models import Puzzle
 
-    test_vals = []
+    test_vals = process_input("""
+    """)
     assert False
 
     puz = Puzzle(2020, N)
