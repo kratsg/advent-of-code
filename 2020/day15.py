@@ -4,13 +4,12 @@ def process_input(data):
 
 def count(numbers, total=2020):
     history = {n: i + 1 for i, n in enumerate(numbers[:-1])}
-    while len(numbers) < total:
-        # get last number spoken
-        last_number = numbers[-1]
+    last_number = numbers[-1]
+    last_turn = len(numbers)
+    while last_turn < total:
         # get last time last number was spoken
         last_spoken = history.get(last_number, -1)
         # update the last number's turn to last turn
-        last_turn = len(numbers)
         history[last_number] = last_turn
         # new number spoken is 0 unless it was spoken before
         new_number = 0
@@ -18,8 +17,9 @@ def count(numbers, total=2020):
             # new number is the age (how many turns apart)
             new_number = last_turn - last_spoken
         # speak the new number
-        numbers.append(new_number)
-    return numbers[-1]
+        last_number = new_number
+        last_turn = last_turn + 1
+    return last_number
 
 
 if __name__ == "__main__":
