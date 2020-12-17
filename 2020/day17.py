@@ -28,61 +28,36 @@ def count_active(data):
     return np.sum(data == "#")
 
 
+def get_slice(index, size):
+    return slice(max(0, index - 1), min(size - 1, index + 2))
+
+
 def tick(data, part2=False):
     data = pad_grid(data)
     # create inactive new state
     new_state = np.copy(data)
     # get centers
-    x, y, z = data.shape
-    xc, yc, zc = x // 2, y // 2, z // 2
-    for k in range(z):
-        for i in range(x):
-            for j in range(y):
-                # what's up at the center
-                center = (i, j, k)
-                is_active = data[center] == "#"
-                ilo = max(0, i - 1)
-                jlo = max(0, j - 1)
-                klo = max(0, k - 1)
-                ihi = min(x - 1, i + 2)
-                jhi = min(y - 1, j + 2)
-                khi = min(z - 1, k + 2)
-                neighbors = data[ilo:ihi, jlo:jhi, klo:khi]
-                # skip counting the center
-                num_active = count_active(neighbors) - int(is_active)
-                if is_active:
-                    if num_active not in [2, 3]:
-                        new_state[center] = "."
-                else:
-                    if num_active == 3:
-                        new_state[center] = "#"
+    shape = data.shape
+    if not part2:
+        shape = (*shape, 1)
 
-    return new_state
-
-
-def tick_part2(data):
-    data = pad_grid(data)
-    # create inactive new state
-    new_state = np.copy(data)
-    # get centers
-    x, y, z, w = data.shape
+    x, y, z, w = shape
     xc, yc, zc, wc = x // 2, y // 2, z // 2, w // 2
+
     for l in range(w):
         for k in range(z):
             for i in range(x):
                 for j in range(y):
                     # what's up at the center
-                    center = (i, j, k, l)
+                    center = (i, j, k)
+                    slices = (get_slice(i, x), get_slice(j, y), get_slice(k, z))
+
+                    if part2:
+                        center = (*center, l)
+                        slices = (*slices, get_slice(l, w))
+
                     is_active = data[center] == "#"
-                    ilo = max(0, i - 1)
-                    jlo = max(0, j - 1)
-                    klo = max(0, k - 1)
-                    llo = max(0, l - 1)
-                    ihi = min(x - 1, i + 2)
-                    jhi = min(y - 1, j + 2)
-                    khi = min(z - 1, k + 2)
-                    lhi = min(w - 1, l + 2)
-                    neighbors = data[ilo:ihi, jlo:jhi, klo:khi, llo:lhi]
+                    neighbors = data[slices]
                     # skip counting the center
                     num_active = count_active(neighbors) - int(is_active)
                     if is_active:
@@ -95,23 +70,9 @@ def tick_part2(data):
     return new_state
 
 
-def print_grid(data):
-    x, y, z = data.shape
-    xc, yc, zc = x // 2, y // 2, z // 2
-    for i in range(z):
-        subset = grid[:, :, i]
-        if np.sum(subset == "#") == 0:
-            continue
-        print(f"z={i-zc}")
-        print("\n".join("".join(x) for x in grid[:, :, i] if "#" in x))
-
-
 def execute(data, num_ticks=6, part2=False):
-    for i in range(6):
-        if part2:
-            data = tick_part2(data)
-        else:
-            data = tick(data)
+    for i in range(num_ticks):
+        data = tick(data, part2=part2)
     return data
 
 
