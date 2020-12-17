@@ -42,7 +42,6 @@ def tick(data, part2=False):
         shape = (*shape, 1)
 
     x, y, z, w = shape
-    xc, yc, zc, wc = x // 2, y // 2, z // 2, w // 2
 
     for l in range(w):
         for k in range(z):
