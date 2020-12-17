@@ -34,7 +34,7 @@ def get_slice(index, size):
 
 def tick(data, part2=False):
     data = pad_grid(data)
-    # create inactive new state
+    # create new state
     new_state = np.copy(data)
     # get centers
     shape = data.shape
@@ -49,22 +49,23 @@ def tick(data, part2=False):
                 for j in range(y):
                     # what's up at the center
                     center = (i, j, k)
+                    # slices for the neighbors
                     slices = (get_slice(i, x), get_slice(j, y), get_slice(k, z))
 
                     if part2:
                         center = (*center, l)
                         slices = (*slices, get_slice(l, w))
 
-                    is_active = data[center] == "#"
                     neighbors = data[slices]
+                    is_active = bool(count_active(data[center]))
                     # skip counting the center
                     num_active = count_active(neighbors) - int(is_active)
-                    if is_active:
-                        if num_active not in [2, 3]:
-                            new_state[center] = "."
+                    if is_active and num_active not in [2, 3]:
+                        new_state[center] = "."
+                    elif not is_active and num_active == 3:
+                        new_state[center] = "#"
                     else:
-                        if num_active == 3:
-                            new_state[center] = "#"
+                        pass
 
     return new_state
 
