@@ -6,29 +6,43 @@ import operator
 import re
 import itertools
 
-# nice regular expression format
-MONSTER = [
-    r"..................#.",
-    r"#....##....##....###",
-    r".#..#..#..#..#..#...",
-]
-MONSTER_REGEX = [re.compile(i) for i in MONSTER]
-MONSTER_HASH = "".join(MONSTER).count("#")
+# top right bottom left (like CSS)
+def get_edges(tile, add_flips=True):
+    edges = [(1, tile[0, :]), (2, tile[:, -1]), (3, tile[-1, :]), (4, tile[:, 0])]
+    edges = [("".join(e), i) for i, e in edges]
+    if not add_flips:
+        return edges
+    return [*edges, *((edge[::-1], -index) for edge, index in edges)]
 
 
-def count_monsters(imageref):
-    for image in perspectives(imageref):
-        monsters = 0
-        for i in range(imageref.shape[0] - len(MONSTER)):
-            for j in range(imageref.shape[1] - len(MONSTER[0])):
-                subset = image[i : i + len(MONSTER), j : j + len(MONSTER[0])]
-                # print_tile(subset)
-                monsters += all(
-                    re.fullmatch(regex, "".join(line))
-                    for line, regex in zip(subset, MONSTER_REGEX)
-                )
-        if monsters:
-            return monsters
+def process_input(data):
+    tiles = {}
+    edges = {}
+    for group in data.split("\n\n"):
+        tileid, tile = group.split(":")
+        tileid = int(tileid[5:])
+        tile = np.genfromtxt(StringIO(tile), dtype="U1", delimiter=1, comments="S")
+        tiles[tileid] = {"tile": tile, "edges": {}}
+        for edgeid, index in get_edges(tile):
+            edges.setdefault(edgeid, []).append(tileid)
+            tiles[tileid]["edges"][edgeid] = index
+    return tiles, edges
+
+
+def get_corners(edges):
+    counts = collections.Counter(
+        (x[0] for x in filter(lambda x: len(x) == 1, edges.values()))
+    )
+    return map(lambda x: x[0], counts.most_common(4))
+
+
+# below are functions written for part 2
+def tile_to_string(tile):
+    return "\n".join(map(lambda x: "".join(x), tile))
+
+
+def print_tile(tile):
+    print(tile_to_string(tile))
 
 
 def rotate(points, k=1):
@@ -38,14 +52,6 @@ def rotate(points, k=1):
 
 def flip(points):
     return np.fliplr(points)
-
-
-def tile_to_string(tile):
-    return "\n".join(map(lambda x: "".join(x), tile))
-
-
-def print_tile(tile):
-    print(tile_to_string(tile))
 
 
 def perspectives(tile):
@@ -63,36 +69,6 @@ def print_tile_combos(tile):
         print("-" * new_tile.shape[0])
 
 
-# top right bottom left (like CSS)
-def get_edges(tile, add_flips=True):
-    edges = [(1, tile[0, :]), (2, tile[:, -1]), (3, tile[-1, :]), (4, tile[:, 0])]
-    edges = [("".join(e), i) for i, e in edges]
-    if not add_flips:
-        return edges
-    return [*edges, *((edge[::-1], -index) for edge, index in edges)]
-
-
-def get_corners(edges):
-    counts = collections.Counter(
-        (x[0] for x in filter(lambda x: len(x) == 1, edges.values()))
-    )
-    return map(lambda x: x[0], counts.most_common(4))
-
-
-def get_borders(edges):
-    counts = collections.Counter(
-        (x[0] for x in filter(lambda x: len(x) == 1, edges.values()))
-    )
-    return map(lambda x: x[0], counts.most_common()[4:])
-
-
-def get_inners(edges):
-    counts = collections.Counter(
-        (i for x in filter(lambda x: len(x) == 2, edges.values()) for i in x)
-    )
-    return map(lambda x: x[0], filter(lambda x: x[1] == 8, counts.most_common()))
-
-
 def get_neighbors(tiles, edges, tileid):
     return set(
         (neighbor, edge)
@@ -100,12 +76,6 @@ def get_neighbors(tiles, edges, tileid):
         for neighbor in edges[edge]
         if neighbor != tileid and tiles[tileid]["edges"][edge] > 0
     )
-
-
-def join_tiles(tiles, edge, joiner, neighbors):
-    joinerpos = tiles[joiner]["edges"][edge]
-    neighborpos = [tiles[neighbor]["edges"][edge] for neighbor in neighbors]
-    print(joiner, neighbors, joinerpos, neighborpos)
 
 
 def make_top_left(tiles, edges, tileid):
@@ -174,8 +144,6 @@ def stack_image(tiles, image, with_edges=True):
 def build_image(tiles, edges):
     size = int(np.sqrt(len(tiles)))
     corners = list(get_corners(edges))
-    borders = list(get_borders(edges))
-    inners = list(get_inners(edges))
 
     image = np.zeros((size, size), dtype=int)
     image[0, 0] = corners[0]
@@ -196,18 +164,27 @@ def build_image(tiles, edges):
     return stack_image(tiles, image, with_edges=False)
 
 
-def process_input(data):
-    tiles = {}
-    edges = {}
-    for group in data.split("\n\n"):
-        tileid, tile = group.split(":")
-        tileid = int(tileid[5:])
-        tile = np.genfromtxt(StringIO(tile), dtype="U1", delimiter=1, comments="S")
-        tiles[tileid] = {"tile": tile, "edges": {}}
-        for edgeid, index in get_edges(tile):
-            edges.setdefault(edgeid, []).append(tileid)
-            tiles[tileid]["edges"][edgeid] = index
-    return tiles, edges
+MONSTER = [
+    r"..................#.",
+    r"#....##....##....###",
+    r".#..#..#..#..#..#...",
+]
+MONSTER_REGEX = [re.compile(i) for i in MONSTER]
+MONSTER_HASH = "".join(MONSTER).count("#")
+
+
+def count_monsters(imageref):
+    for image in perspectives(imageref):
+        monsters = 0
+        for i in range(imageref.shape[0] - len(MONSTER)):
+            for j in range(imageref.shape[1] - len(MONSTER[0])):
+                subset = image[i : i + len(MONSTER), j : j + len(MONSTER[0])]
+                monsters += all(
+                    re.fullmatch(regex, "".join(line))
+                    for line, regex in zip(subset, MONSTER_REGEX)
+                )
+        if monsters:
+            return monsters
 
 
 if __name__ == "__main__":
