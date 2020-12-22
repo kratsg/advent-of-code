@@ -14,20 +14,15 @@ def play_part1(player1, player2):
     return [player1, player2]
 
 
-def stringify(player1, player2):
-    return "|".join(map(lambda x: ",".join(map(str, x)), [player1, player2]))
-
-
 def play_part2(player1, player2, depth=0):
     player1, player2 = [*player1], [*player2]
     history = {}
     while player1 and player2:
         winner = None
-        string = stringify(player1, player2)
-
-        if string in history:
+        index = (tuple(player1), tuple(player2))
+        if index in history:
             return "p1"
-        history[stringify(player1, player2)] = True
+        history[index] = True
         p1 = player1.pop(0)
         p2 = player2.pop(0)
 
