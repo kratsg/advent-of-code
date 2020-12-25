@@ -101,7 +101,6 @@ if __name__ == "__main__":
 
     data = process_input(puz.input_data)
     found = reverse_handshake(data)
-    breakpoint()
     puz.answer_a = handshake(data[1], found[data[0]][1])
     print(f"Part 1: {puz.answer_a}")
 
