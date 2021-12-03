@@ -1,6 +1,7 @@
 def process_input(data):
     return list(map(int, data.split()))
 
+
 def window(sequence, size=2):
     it = iter(sequence)
     result = [next(it) for _ in range(size)]
@@ -10,11 +11,14 @@ def window(sequence, size=2):
         result = result[1:] + [element]
         yield result
 
+
 def part1(sequence):
     return sum(map(lambda x: x[-1] > x[0], window(sequence, size=2)))
 
+
 def part2(sequence):
     return sum(map(lambda x: x[-1] > x[0], window(sequence, size=6)))
+
 
 if __name__ == "__main__":
     from aocd.models import Puzzle
@@ -32,7 +36,6 @@ if __name__ == "__main__":
 263"""
     )
 
-
     assert part1(test_vals) == 7
 
     puz = Puzzle(2021, 1)
@@ -41,7 +44,6 @@ if __name__ == "__main__":
 
     puz.answer_a = part1(numbers)
     print(f"Part 1: {puz.answer_a}")
-
 
     assert part2(test_vals) == 5
 
