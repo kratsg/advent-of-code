@@ -56,25 +56,32 @@ def deduce_line(line):
 
     # 0, 6, 9
     for code in left[left_counts == 6]:
-        # first subtract the code from 1: if there's anything left, definitely a 9
         if set(deductions[1]) - set(code):
+            # first subtract the code from 1: if there's anything left, definitely a 6
             deductions[6] = code
         elif set(deductions[4]) - set(code):
+            # then subtract code from 4: if there's anything left (and it's not a 6), it's a 0
             deductions[0] = code
         else:
+            # it's gotta be a 9
             deductions[9] = code
 
     # 2, 3, 5
+    # first compute the 'cc' because i don't know how to differentiate 2/5 otherwise
     cc = set(deductions[1]) - set(deductions[6])
     for code in left[left_counts == 5]:
         if not (set(deductions[1]) - set(code)):
+            # subtract the code from 1: if there's nothing left, definitely a 3
             deductions[3] = code
         elif cc - set(code):
+            # subtract the code from cc: if anything else, it's a 5
             deductions[5] = code
         else:
+            # else it's a 2
             deductions[2] = code
 
     assert len(deductions) == 10
+    # note: frozenset is hashable, so abusing this to look up a number from the (set of) letters
     return {frozenset(code): str(number) for number, code in deductions.items()}
 
 
