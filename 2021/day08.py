@@ -1,7 +1,4 @@
 import numpy as np
-import re
-
-length_to_number = {2: 1, 3: 7, 4: 4, 5: [2, 3, 5], 6: [0, 6, 9], 7: 8}
 
 
 def process_input(data):
@@ -47,6 +44,8 @@ b    .  b    .  .    c  b    c  b    c
 def deduce_line(line):
     left = np.array(line)
     left_counts = get_counts(left)
+
+    length_to_number = {2: 1, 3: 7, 4: 4, 5: [2, 3, 5], 6: [0, 6, 9], 7: 8}
 
     deductions = {
         length_to_number[i]: left[left_counts == i][0]
