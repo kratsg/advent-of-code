@@ -2,7 +2,7 @@ advent-of-code-data==0.9.3
 appdirs==1.4.4
 beautifulsoup4==4.9.3
 black==20.8b1
-certifi==2020.11.8
+certifi==2022.12.7
 chardet==3.0.4
 click==7.1.2
 idna==2.10
