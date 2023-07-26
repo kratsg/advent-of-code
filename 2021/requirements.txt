@@ -6,7 +6,7 @@ charset-normalizer==2.0.8
 click==8.0.3
 idna==3.3
 mypy-extensions==0.4.3
-numpy==1.21.4
+numpy==1.22.0
 pathspec==0.9.0
 Pebble==4.6.3
 platformdirs==2.4.0
