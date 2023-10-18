@@ -21,4 +21,4 @@ tomli==1.2.2
 typing_extensions==4.0.1
 tzdata==2021.5
 tzlocal==4.1
-urllib3==1.26.7
+urllib3==1.26.18
